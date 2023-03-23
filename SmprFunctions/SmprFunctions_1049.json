@@ -1,0 +1,425 @@
+﻿{
+  "Lib": [
+    "const double DEGREE_ABSOLUTE_ZERO_C = 273.15;",
+    "const double DEGREE_ABSOLUTE_ZERO_F = DEGREE_ABSOLUTE_ZERO_C * 1.8 - 32;",
+    "static double a { get { return temperatureC ? 1.8 : 1; } }",
+    "static double absZero { get { return temperatureC ? DEGREE_ABSOLUTE_ZERO_C : DEGREE_ABSOLUTE_ZERO_F; } }",
+    "static double tat(double x) { return a * (x + absZero); }",
+    "static double fat(double x) { return x / a - absZero; }",
+  ],
+  "Id2FunctionDefinition": {
+    "FlsToFli": {
+      "Description": "FLS в FLI",
+      "SourceQualities": {
+        "FLS": {
+          "Type": "double",
+          "Description": "FLS (градус F/C)"
+        }
+      },
+      "Formula": [ "return Math.Pow( 10, 42.1093 - 14.286 * Math.Log10( tat(FLS) ) );" ]
+    },
+    "FliToFls": {
+      "Description": "FLI в FLS - обратная функция к FlsToFli",
+      "SourceQualities": {
+        "FLI": {
+          "Type": "double",
+          "Description": "FLI"
+        }
+      },
+      "Formula": [ "return fat( Math.Pow( 10, (42.1093 - Math.Log10(FLI) ) / 14.286 ) );" ]
+    },
+    "PorToPpi": {
+      "Description": "POR в PPI",
+      "SourceQualities": {
+        "POR": {
+          "Type": "double",
+          "Description": "POR (градус F/C)"
+        }
+      },
+      "Formula": [ "return Math.Exp( 12.8852 * Math.Log( tat(POR) ) - 73.0883);" ]
+    },
+    "PpiToPor": {
+      "Description": "PPI в POR - обратная функция к PorToPpi",
+      "SourceQualities": {
+        "PPI": {
+          "Type": "double",
+          "Description": "PPI"
+        }
+      },
+      "Formula": [ "return fat( Math.Exp( ( Math.Log(PPI) + 73.0883 ) / 12.8852 ) );" ]
+    },
+    "CstToVbi": {
+      "Description": "CST в VBI",
+      "SourceQualities": {
+        "CST": {
+          "Type": "double",
+          "Description": "CST (при 122 градусах F)"
+        }
+      },
+      "Formula": [ "return 41.10743 - 49.08258 * Math.Log10(Math.Log10(CST + 0.8));" ]
+    },
+    "VbiToCst": {
+      "Description": "VBI в CST - обратная функция к CstToVbi",
+      "SourceQualities": {
+        "VBI": {
+          "Type": "double",
+          "Description": "VBI"
+        }
+      },
+      "Formula": [ "return Math.Pow(10, Math.Pow(10, (41.10743 - VBI) / 49.08258)) - 0.8;" ]
+    },
+    "SsfToVbi": {
+      "Description": "SSF в VBI",
+      "SourceQualities": {
+        "SSF": {
+          "Type": "double",
+          "Description": "SSF (при 122 градусах F)"
+        }
+      },
+      "Formula": [ "return 35.37666 - 41.36497 * Math.Log10(Math.Log10(SSF + 0.8));" ]
+    },
+    "AbpToSpgToKfc": {
+      "Description": "ABP и SPG в KFC",
+      "SourceQualities": {
+        "ABP": {
+          "Type": "double",
+          "Description": "ABP"
+        },
+        "SPG": {
+          "Type": "double",
+          "Description": "SPG"
+        }
+      },
+      "Formula": [
+        "if(SPG == 0) return \"divide_by_zero(SPG)\";",
+        "return Math.Pow(10, Math.Log10(ABP + DEGREE_ABSOLUTE_ZERO_F) / 3 / SPG);"
+      ]
+    },
+    "CcnToApiToEci": {
+      "Description": "CCN и API в ECI",
+      "SourceQualities": {
+        "CCN": {
+          "Type": "double",
+          "Description": "CCN"
+        },
+        "API": {
+          "Type": "double",
+          "Description": "API"
+        }
+      },
+      "Formula": [ "return 0.06 * CCN + 25.31 - API;" ]
+    },
+    "NapToAroToN2a": {
+      "Description": "NAP и ARO в N2A",
+      "SourceQualities": {
+        "NAP": {
+          "Type": "double",
+          "Description": "NAP"
+        },
+        "ARO": {
+          "Type": "double",
+          "Description": "ARO"
+        }
+      },
+      "Formula": [ "return NAP + 2 * ARO;" ]
+    },
+    "CixToCbn": {
+      "Description": "CIX в CBN",
+      "SourceQualities": {
+        "CIX": {
+          "Type": "double",
+          "Description": "CIX"
+        }
+      },
+      "Formula": [ "return (0.01076 * CIX + 0.0571) * CIX + 16.7;" ]
+    },
+    "CbnToCix": {
+      "Description": "CBN в CIX - обратная функция к CixToCbn",
+      "SourceQualities": {
+        "CBN": {
+          "Type": "double",
+          "Description": "CBN"
+        }
+      },
+      "Formula": [ "return (Math.Sqrt(0.04304 * CBN - 0.715508) - 0.0571) / 0.02152;" ]
+    },
+    "BtuPerTonToSPGToBtuPerBbl": {
+      "Description": "BTU на тонну в BTU на баррель",
+      "SourceQualities": {
+        "BTU": {
+          "Type": "double",
+          "Description": "BTU"
+        },
+        "SPG": {
+          "Type": "double",
+          "Description": "SPG"
+        }
+      },
+      "Formula": [ "return BTU * 0.175 * SPG;" ]
+    },
+    "SpgToApi": {
+      "Description": "SPG в API",
+      "SourceQualities": {
+        "SPG": {
+          "Type": "double",
+          "Description": "SPG"
+        }
+      },
+      "Formula": [ "if (SPG == 0) return \"divide_by_zero(SPG)\"; return 141.5 / SPG - 131.5;" ]
+    },
+    "CldToCli": {
+      "Description": "CLD в CLI",
+      "SourceQualities": {
+        "CLD": {
+          "Type": "double",
+          "Description": "CLD (градус F/C)"
+        }
+      },
+      "Formula": [ "return Math.Pow( 0.0026415 * tat(CLD), 20 );" ]
+    },
+    "CliToCld": {
+      "Description": "CLI в CLD - обратная функция к CldToCli",
+      "SourceQualities": {
+        "CLI": {
+          "Type": "double",
+          "Description": "CLI"
+        }
+      },
+      "Formula": [ "return fat( Math.Pow(CLI, 0.05) / 0.0026415 );" ]
+    },
+    "ID": {
+      "Description": "Вход в выход",
+      "SourceQualities": {
+        "IN": {
+          "Type": "double",
+          "Description": "Input"
+        }
+      },
+      "Formula": [ "return IN;" ]
+    },
+    "RvpToRvi": {
+      "Description": "RVP в RVI",
+      "SourceQualities": {
+        "RVP": {
+          "Type": "double",
+          "Description": "RVP"
+        }
+      },
+      "Formula": [ "return Math.Pow(RVP, 1.25);" ]
+    },
+    "RviToRvp": {
+      "Description": "RVI в RVP - обратная функция к RvpToRvi",
+      "SourceQualities": {
+        "RVI": {
+          "Type": "double",
+          "Description": "RVI"
+        }
+      },
+      "Formula": [ "return Math.Pow(RVI, 0.8);" ]
+    },
+    "XToK1ToK2ToK3_Exp": {
+      "Description": "Обобщенная экспоненциальная функция [K1 * (X ^ K2) + K3]",
+      "SourceQualities": {
+        "X": {
+          "Type": "double",
+          "Description": "X"
+        }
+      },
+      "Parameters": {
+        "K1": {
+          "Type": "double",
+          "Description": "K1"
+        },
+        "K2": {
+          "Type": "double",
+          "Description": "K2"
+        },
+        "K3": {
+          "Type": "double",
+          "Description": "K3"
+        }
+      },
+      "Formula": [ "return K1 * Math.Pow(X, K2) + K3;" ]
+    },
+    "XToYToK1ToK2ToK3_Lin": {
+      "Description": "Обобщенная линейная комбинация двух переменных [K1 * X + K2 * Y + K3]",
+      "SourceQualities": {
+        "X": {
+          "Type": "double",
+          "Description": "X"
+        },
+        "Y": {
+          "Type": "double",
+          "Description": "Y"
+        }
+      },
+      "Parameters": {
+        "K1": {
+          "Type": "double",
+          "Description": "K1"
+        },
+        "K2": {
+          "Type": "double",
+          "Description": "K2"
+        },
+        "K3": {
+          "Type": "double",
+          "Description": "K3"
+        }
+      },
+      "Formula": [ "return K1 * X + K2 * Y + K3;" ]
+    },
+    "XToK1ToK2ToK3_Log": {
+      "Description": "Обобщенное вычисление VBI, результат - смесительный индекс [K1 + K2 * ln ln (X + K3)]",
+      "SourceQualities": {
+        "X": {
+          "Type": "double",
+          "Description": "X (инженерное значение)"
+        }
+      },
+      "Parameters": {
+        "K1": {
+          "Type": "double",
+          "Description": "K1"
+        },
+        "K2": {
+          "Type": "double",
+          "Description": "K2"
+        },
+        "K3": {
+          "Type": "double",
+          "Description": "K3"
+        }
+      },
+      "Formula": [ "return K1 + K2 * Math.Log(Math.Log(X + K3));" ]
+    },
+    "XToK1ToK2ToK3_Log_Inv": {
+      "Description": "Обратная функция к функции XToK1ToK2ToK3_Log [exp exp ((X-K1) / K2) - K3]",
+      "SourceQualities": {
+        "X": {
+          "Type": "double",
+          "Description": "X (смесительный индекс)"
+        }
+      },
+      "Parameters": {
+        "K1": {
+          "Type": "double",
+          "Description": "K1"
+        },
+        "K2": {
+          "Type": "double",
+          "Description": "K2"
+        },
+        "K3": {
+          "Type": "double",
+          "Description": "K3"
+        }
+      },
+      "Formula": [ "if (K2 == 0) return \"divide_by_zero(K2)\"; return Math.Exp(Math.Exp((X - K1) / K2)) - K3;" ]
+    },
+    "TempToBlendIdx": {
+      "Description": "Обобщенная функция для преобразования свойства, выраженного температурой, в смесительный индекс [exp(K1 + K2 * ln (K3 * tat (X)))]",
+      "SourceQualities": {
+        "X": {
+          "Type": "double",
+          "Description": "X"
+        }
+      },
+      "Parameters": {
+        "K1": {
+          "Type": "double",
+          "Description": "K1"
+        },
+        "K2": {
+          "Type": "double",
+          "Description": "K2"
+        },
+        "K3": {
+          "Type": "double",
+          "Description": "K3"
+        },
+        "TT": {
+          "Type": "double",
+          "Description": "Конвертировать в абсолютную температуру"
+        }
+      },
+      "Formula": [
+        "if (TT > 0) X = tat(X);",
+        "if (X * K3 <= 0) return \"tat(X)*K3>0\";",
+        "double r = Math.Exp(K1 + K2* Math.Log(K3 * X));",
+        "return TT < 0 ? fat(r) : r;"
+      ]
+    },
+    "TempToBlendIdx_Inv": {
+      "Description": "Обратная функция к TempToBlendIdx [fat ( exp ((ln (X) - K1) / K2) / K3)]",
+      "SourceQualities": {
+        "X": {
+          "Type": "double",
+          "Description": "X"
+        }
+      },
+      "Parameters": {
+        "K1": {
+          "Type": "double",
+          "Description": "K1"
+        },
+        "K2": {
+          "Type": "double",
+          "Description": "K2"
+        },
+        "K3": {
+          "Type": "double",
+          "Description": "K3"
+        },
+        "TT": {
+          "Type": "double",
+          "Description": "Конвертировать из абсолютной температуры"
+        }
+      },
+      "Formula": [
+        "if (K2 == 0) return \"divide_by_zero(K2)\";",
+        "if (K3 == 0) return \"divide_by_zero(K3)\";",
+        "if (TT > 0) X = a * (X + absZero);",
+        "if (X <= 0) return \"tat(X)>0\";",
+        "double r = Math.Exp((Math.Log(X) - K1) / K2) / K3;",
+        "return TT < 0 ? r / a - absZero : r;"
+      ]
+    },
+    "GenCubic": {
+      "Description": "Обобщенная кубическая (или меньшей степени) функция [K1 + K2 * X + K3 * X^2 + TT * X^3]",
+      "SourceQualities": {
+        "X": {
+          "Type": "double",
+          "Description": "X"
+        }
+      },
+      "Parameters": {
+        "K1": {
+          "Type": "double",
+          "Description": "K1"
+        },
+        "K2": {
+          "Type": "double",
+          "Description": "K2"
+        },
+        "K3": {
+          "Type": "double",
+          "Description": "K3"
+        },
+        "TT": {
+          "Type": "double",
+          "Description": "TT"
+        }
+      },
+      "Formula": [ "return K1 + K2 * X + K3 * Math.Pow(X, 2) + TT * Math.Pow(X, 3);" ]
+    },
+  },
+  "Messages": {
+    "divide_by_zero(SPG)": "SPG не может быть равно 0",
+    "divide_by_zero(K2)": "K2 не может быть равно 0",
+    "divide_by_zero(K3)": "K3 не может быть равно 0",
+    "tat(X)*K3>0": "tat(X)*K3 должно быть больше 0",
+    "tat(X)>0": "tat(X) должно быть больше 0",
+    "enumX": "Значение для перечисления X неверно",
+  }
+}
